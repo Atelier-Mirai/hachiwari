@@ -1,5 +1,5 @@
 ---
 :results: !ruby/struct:Hachiwari::CLI::Results
-  target: 0.85
-  wins: 67
-  losses: 29
+  target: 0.8
+  wins: 7169
+  losses: 1824

@@ -6,7 +6,7 @@ module Hachiwari
   class CLI < Thor
 
     Results   = Struct.new(:target, :wins, :losses)
-    @@db      = YAML::Store.new('./lib/results.yml')
+    @@db      = YAML::Store.new("#{Dir.home}/.hachiwari")
     @@results = @@db.transaction { @@db[:results] } if @@db
     @@results ||= Results.new(0.8, 0, 0)
     class << self
@@ -44,7 +44,6 @@ module Hachiwari
     def reach_wins(wins, losses)
       target = @@results.target
       (target / (1 - target) * losses - wins).round(6).ceil
-      # 1.000_000_000_000_014_2
     end
   end
 end
