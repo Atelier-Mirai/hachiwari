@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    hachiwari (0.2.0)
+    hachiwari (0.3.0)
       thor
 
 GEM

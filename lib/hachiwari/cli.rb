@@ -5,10 +5,10 @@ require 'yaml/store'
 module Hachiwari
   class CLI < Thor
 
-    Results   = Struct.new(:target, :wins, :losses)
+    Results   = Struct.new(:wins, :losses, :target, :language)
     @@db      = YAML::Store.new("#{Dir.home}/.hachiwari")
     @@results = @@db.transaction { @@db[:results] } if @@db
-    @@results ||= Results.new(0.8, 0, 0)
+    @@results ||= Results.new(0, 0, 80, :ja)
     class << self
       def save
         @@db.transaction { @@db[:results] = @@results }
@@ -16,23 +16,45 @@ module Hachiwari
     end
     CLI.save
 
-    desc "target {80}", "Set the win rate 80% you are aiming for."
-    def target(win_rate = 80)
-      @@results.target = win_rate.to_i / 100.0
+    # desc "target [80]", "Set the win rate 80% you are aiming for."
+    # def target(win_rate = 80)
+    #   @@results.target = win_rate.to_i
+    #   CLI.save
+    # end
+
+    desc "status [wins] [losses] [target] [language]", "Displays winning percentage and number of wins to achieve the goal."
+    def status(wins = @@results.wins, losses = @@results.losses, target = @@results.target, language = @@results.language)
+      wins     = wins.to_i       if ARGV[1]
+      losses   = losses.to_i     if ARGV[2]
+      target   = target.to_i     if ARGV[3]
+      language = language.to_sym if ARGV[4]
+
+      @@results.wins     = wins
+      @@results.losses   = losses
+      @@results.target   = target
+      @@results.language = language
       CLI.save
+
+      case language
+      when :ja
+        puts "#{wins+losses} 戦 #{wins} 勝 #{losses} 敗 勝率 #{winning_percentage(wins, losses)} % です"
+        puts "あと #{reach_wins(wins, losses)} 勝で 勝率 #{(@@results.target).to_i} % です"
+      when :en
+        puts "#{wins+losses} games #{wins} wins #{losses} losses a winning percentage of #{winning_percentage(wins, losses)} %."
+        puts "You need #{reach_wins(wins, losses)} more wins to reach #{(@@results.target).to_i} %"
+      end
     end
 
-    desc "status {wins} {losses}", "Displays winning percentage and number of wins to achieve the goal."
-    def status(wins = @@results.wins, losses = @@results.losses)
-      wins   = wins.to_i   if ARGV[1]
-      losses = losses.to_i if ARGV[2]
+    desc "show   [wins] [losses] [target] [language]", "Another name for the status command."
+    def show(wins = @@results.wins, losses = @@results.losses, target = @@results.target, language = @@results.language)
+      status(wins, losses, target, language)
+    end
+    # alias
+    # map show: :status
 
-      puts "#{wins} 勝 #{losses} 敗 勝率 #{winning_percentage(wins, losses)} % です"
-      puts "あと #{reach_wins(wins, losses)} 勝で 勝率 #{(@@results.target*100).to_i} % です"
-
-      @@results.wins   = wins
-      @@results.losses = losses
-      CLI.save
+    desc "version", "Displays the version number."
+    def version
+      puts Hachiwari::VERSION
     end
 
     private
@@ -42,26 +64,8 @@ module Hachiwari
     end
 
     def reach_wins(wins, losses)
-      target = @@results.target
+      target = @@results.target / 100.0
       (target / (1 - target) * losses - wins).round(6).ceil
     end
   end
 end
-
-
-# Results = Struct.new(:target, :wins, :losses) do
-#   def load
-#     db = YAML::Store.new('./lib/results.yml')
-#     results = if db
-#                 db.transaction do
-#                   db[:results]
-#                 end
-#               else
-#                 Results.new(0.8, 7125, 1822)
-#               end
-#     results.wins   = ARGV[0].to_i if ARGV[0]
-#     results.losses = ARGV[1].to_i if ARGV[1]
-#     [:target, :wins, :losses].each do |key|
-#       self[key] = results[key]
-#     end
-#   end
