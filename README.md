@@ -23,7 +23,7 @@ Install it yourself as:
 % hachiwari status [wins] [losses] [target] [language]
 ```
 
-(``` status ``` コマンドの別名として、 ``` show ``` コマンドも用いることが出来ます。)
+(``` status ``` コマンドの別名として、 ``` s ``` コマンドを用いることが出来ます。)
 
 四つの引数、勝ち数、負け数、目標勝率、表示言語があります。すべての引数は省略可能です。
 
@@ -43,7 +43,6 @@ Install it yourself as:
 ```
 
 Hachiwari のバージョンを表示します。
-現在のバージョンは、0.3.0 です。
 
 ## Display the number of wins needed to achieve the target win rate.
 
@@ -51,7 +50,7 @@ Hachiwari のバージョンを表示します。
 % hachiwari status [wins] [losses] [target] [language]
 ```
 
-(The ``` show ``` command can also be used as an alias for ``` status ```).
+(The ``` s ``` command can also be used as an alias for ``` status ```).
 
 There are four arguments: number of wins, number of losses, target win percentage, and display language. All arguments are optional.
 
@@ -71,7 +70,6 @@ There are four arguments: number of wins, number of losses, target win percentag
 ```
 
 Displays the version of Hachiwari.
-The current version is 0.3.0.
 
 ## 開発 Development
 

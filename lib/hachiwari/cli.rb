@@ -45,12 +45,10 @@ module Hachiwari
       end
     end
 
-    desc "show   [wins] [losses] [target] [language]", "Another name for the status command."
-    def show(wins = @@results.wins, losses = @@results.losses, target = @@results.target, language = @@results.language)
+    desc "s   [wins] [losses] [target] [language]", "Another name for the status command."
+    def s(wins = @@results.wins, losses = @@results.losses, target = @@results.target, language = @@results.language)
       status(wins, losses, target, language)
     end
-    # alias
-    # map show: :status
 
     desc "version", "Displays the version number."
     def version
