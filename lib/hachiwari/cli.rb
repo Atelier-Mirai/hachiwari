@@ -9,6 +9,7 @@ module Hachiwari
     @@db      = YAML::Store.new("#{Dir.home}/.hachiwari")
     @@results = @@db.transaction { @@db[:results] } if @@db
     @@results ||= Results.new(0, 0, 80, :ja)
+
     class << self
       def save
         @@db.transaction { @@db[:results] = @@results }
@@ -16,24 +17,20 @@ module Hachiwari
     end
     CLI.save
 
-    # desc "target [80]", "Set the win rate 80% you are aiming for."
-    # def target(win_rate = 80)
-    #   @@results.target = win_rate.to_i
-    #   CLI.save
-    # end
-
-    desc "status [wins] [losses] [target] [language]", "Displays winning percentage and number of wins to achieve the goal."
-    def status(wins = @@results.wins, losses = @@results.losses, target = @@results.target, language = @@results.language)
+    desc "status [wins] [losses] [target] [language]", "Displays winning percentage and number of wins to achieve the goal. (with save status)"
+    def status(wins = @@results.wins, losses = @@results.losses, target = @@results.target, language = @@results.language, save = true)
       wins     = wins.to_i       if ARGV[1]
       losses   = losses.to_i     if ARGV[2]
       target   = target.to_i     if ARGV[3]
       language = language.to_sym if ARGV[4]
 
-      @@results.wins     = wins
-      @@results.losses   = losses
-      @@results.target   = target
-      @@results.language = language
-      CLI.save
+      if save
+        @@results.wins     = wins
+        @@results.losses   = losses
+        @@results.target   = target
+        @@results.language = language
+        CLI.save
+      end
 
       case language
       when :ja
@@ -48,6 +45,16 @@ module Hachiwari
     desc "s   [wins] [losses] [target] [language]", "Another name for the status command."
     def s(wins = @@results.wins, losses = @@results.losses, target = @@results.target, language = @@results.language)
       status(wins, losses, target, language)
+    end
+
+    desc "info [wins] [losses] [target] [language]", "Displays winning percentage and number of wins to achieve the goal. (Information only)"
+    def info(wins = @@results.wins, losses = @@results.losses, target = @@results.target, language = @@results.language)
+      status(wins, losses, target, language, false)
+    end
+
+    desc "i   [wins] [losses] [target] [language]", "Another name for the info command."
+    def i(wins = @@results.wins, losses = @@results.losses, target = @@results.target, language = @@results.language)
+      status(wins, losses, target, language, false)
     end
 
     desc "version", "Displays the version number."

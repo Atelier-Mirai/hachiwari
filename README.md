@@ -17,7 +17,7 @@ Install it yourself as:
 
 ## 使い方 Usage
 
-## 目標勝率を達成するために必要な勝ち数を表示する
+## 目標勝率を達成するために必要な勝ち数を表示する (自動保存機能付)
 
 ``` zsh
 % hachiwari status [wins] [losses] [target] [language]
@@ -35,6 +35,19 @@ Install it yourself as:
 * 負け数を与えたい場合・更新したい場合には、二番目の引数として、status コマンドを実行してください。
 * 目標勝率を変更したい場合には、三番目の引数として下さい。九割の勝率を目指す場合には、90 と指定します。
 * 表示言語を変更したい場合には、四番目の引数として与えてください。既定値は日本語 ja です。英語に変更したい場合には、en を指定してください。
+* 与えられた引数は、自動で保存される為、勝ち数のみが増えた場合、残りの引数の入力は不要です。
+
+## 目標勝率を達成するために必要な勝ち数を表示する (情報表示のみ)
+
+``` zsh
+% hachiwari info [wins] [losses] [target] [language]
+```
+
+(``` info ``` コマンドの別名として、 ``` i ``` コマンドを用いることが出来ます。)
+
+使い方は、``` status / s ``` コマンドと同じです。
+自動保存を行わず、情報表示のみである点が異なります。
+例えばこの場合はどうなるのだろうかと、試算する用途などに便利です。
 
 ## Hachiwari のバージョンを表示する
 
@@ -44,7 +57,7 @@ Install it yourself as:
 
 Hachiwari のバージョンを表示します。
 
-## Display the number of wins needed to achieve the target win rate.
+## Display the number of wins needed to achieve the target win rate. (with automatic saving)
 
 ``` zsh
 % hachiwari status [wins] [losses] [target] [language]
@@ -62,6 +75,13 @@ There are four arguments: number of wins, number of losses, target win percentag
 * If you want to give/update the number of losses, please execute the status command as the second argument.
 * If you want to change the target winning percentage, make it the third argument. If you want to aim for a 90% win rate, specify 90.
 * If you want to change the display language, give it as the fourth argument. The default language is Japanese ``` ja ```. If you want to change it to English, specify ``` en ```.
+* The arguments given are automatically saved, so if only the number of wins is increased, the remaining arguments need not be entered.
+
+## Display the number of wins needed to achieve the target win rate. (information only)
+
+Usage is the same as the ```status / s ``` command.
+The difference is that it does not save automatically, but only displays information.
+It is useful, for example, for estimating what would happen in this case.
 
 ## Display the version of Hachiwari
 
