@@ -1,13 +1,26 @@
+# RuboCop 全体設定
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.3
+  # Ruby 3.3 以降向けの新しい Cop も自動的に有効化
+  NewCops: enable
+  # 実行ファイルはコマンドライン用途でスタイルが特殊なため除外
+  Exclude:
+    - "bin/**/*"
 
+# 文字列リテラルはダブルクォートで統一
 Style/StringLiterals:
   Enabled: true
   EnforcedStyle: double_quotes
 
+# 補間文字列もダブルクォートを強制
 Style/StringLiteralsInInterpolation:
   Enabled: true
   EnforcedStyle: double_quotes
 
+# 行の長さ上限を 120 文字に設定
 Layout/LineLength:
   Max: 120
+
+# ドキュメントコメントを必須にしない
+Style/Documentation:
+  Enabled: false

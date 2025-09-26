@@ -1,60 +1,43 @@
-# require "hachiwari"
+# frozen_string_literal: true
+
 require "thor"
-require 'yaml/store'
+require_relative "status_runner"
 
 module Hachiwari
+  # Thor を利用したコマンドラインインターフェイスのエントリポイント
   class CLI < Thor
-
-    Results   = Struct.new(:wins, :losses, :target, :language)
-    @@db      = YAML::Store.new("#{Dir.home}/.hachiwari")
-    @@results = @@db.transaction { @@db[:results] } if @@db
-    @@results ||= Results.new(0, 0, 80, :ja)
-
-    class << self
-      def save
-        @@db.transaction { @@db[:results] = @@results }
-      end
+    # `thor` の初期化時にステータス処理担当のランナーを準備
+    def initialize(*args, **kwargs)
+      super
+      @runner = StatusRunner.new
     end
-    CLI.save
 
-    desc "status [wins] [losses] [target] [language]", "Displays winning percentage and number of wins to achieve the goal. (with save status)"
-    def status(wins = @@results.wins, losses = @@results.losses, target = @@results.target, language = @@results.language, save = true)
-      wins     = wins.to_i       if ARGV[1]
-      losses   = losses.to_i     if ARGV[2]
-      target   = target.to_i     if ARGV[3]
-      language = language.to_sym if ARGV[4]
-
-      if save
-        @@results.wins     = wins
-        @@results.losses   = losses
-        @@results.target   = target
-        @@results.language = language
-        CLI.save
-      end
-
-      case language
-      when :ja
-        puts "#{wins+losses} 戦 #{wins} 勝 #{losses} 敗 勝率 #{winning_percentage(wins, losses)} % です"
-        puts "あと #{reach_wins(wins, losses)} 勝で 勝率 #{(@@results.target).to_i} % です"
-      when :en
-        puts "#{wins+losses} games #{wins} wins #{losses} losses a winning percentage of #{winning_percentage(wins, losses)} %."
-        puts "You need #{reach_wins(wins, losses)} more wins to reach #{(@@results.target).to_i} %"
-      end
+    desc "status [wins] [losses] [target] [language]", <<~DESC.strip
+      Displays winning percentage and number of wins to achieve the goal. (with save status)
+    DESC
+    # 勝敗・目標勝率・言語を受け取り、状態を保存しながら結果を表示
+    def status(*args)
+      wins, losses, target, language = args
+      run_status(save: true, wins: wins, losses: losses, target: target, language: language)
     end
 
     desc "s   [wins] [losses] [target] [language]", "Another name for the status command."
-    def s(wins = @@results.wins, losses = @@results.losses, target = @@results.target, language = @@results.language)
-      status(wins, losses, target, language)
+    def s(...)
+      status(...)
     end
 
-    desc "info [wins] [losses] [target] [language]", "Displays winning percentage and number of wins to achieve the goal. (Information only)"
-    def info(wins = @@results.wins, losses = @@results.losses, target = @@results.target, language = @@results.language)
-      status(wins, losses, target, language, false)
+    desc "info [wins] [losses] [target] [language]", <<~DESC.strip
+      Displays winning percentage and number of wins to achieve the goal. (Information only)
+    DESC
+    # 状態を保存せず試算だけ行うコマンド
+    def info(*args)
+      wins, losses, target, language = args
+      run_status(save: false, wins: wins, losses: losses, target: target, language: language)
     end
 
     desc "i   [wins] [losses] [target] [language]", "Another name for the info command."
-    def i(wins = @@results.wins, losses = @@results.losses, target = @@results.target, language = @@results.language)
-      status(wins, losses, target, language, false)
+    def i(...)
+      info(...)
     end
 
     desc "version", "Displays the version number."
@@ -62,15 +45,29 @@ module Hachiwari
       puts Hachiwari::VERSION
     end
 
-    private
-
-    def winning_percentage(wins, losses)
-      (wins / (wins + losses).to_f * 100).round(4)
+    desc "calculate [wins] [losses]", "Prints the winning percentage without reading or writing state."
+    option :target, type: :numeric, desc: "Target percentage"
+    option :language, type: :string, desc: "Display language (ja or en)"
+    # `status`/`info` とは別に、オプション経由でパラメータを受け取って計算のみ行う
+    def calculate(wins, losses)
+      runner.call(
+        {
+          wins: wins,
+          losses: losses,
+          target: options[:target],
+          language: options[:language]
+        }.compact,
+        save: false
+      )
     end
 
-    def reach_wins(wins, losses)
-      target = @@results.target / 100.0
-      (target / (1 - target) * losses - wins).round(6).ceil
+    private
+
+    attr_reader :runner
+
+    # `StatusRunner` へ依頼し、不要な nil を除いて保存フラグ付きで実行
+    def run_status(save:, **params)
+      runner.call(params.compact, save: save)
     end
   end
 end
