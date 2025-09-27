@@ -1,0 +1,70 @@
+en:
+  status:
+    summary: "%<total>d games %<wins>d wins %<losses>d losses a winning percentage of %<percentage>.4f %%."
+    needed: "You need %<needed>d more wins to reach %<target>d %%."
+    cushion: "%<losses_to_fall>d more losses would drop you below %<target>d %%"
+  help:
+    general_intro: "Available commands:"
+    command_heading: "Command: %<usage>s"
+    description_heading: "Description: %<description>s"
+    unknown_command: "Command \"%<command>s\" was not found."
+    general_footer:
+      - "Run `hachiwari <command> --help` for more details."
+    commands:
+      status:
+        usage: "hachiwari [status] [wins] [losses] [target] [language]"
+        description: "Displays winning percentage and number of wins to achieve the goal. (use --trial to skip saving)"
+        details:
+          - "You can omit 'status' and just pass the arguments."
+          - "Option: --trial / -t to simulate without saving."
+      s:
+        usage: "hachiwari s   [wins] [losses] [target] [language]"
+        description: "Deprecated alias. You can omit 'status' and pass arguments directly."
+      version:
+        usage: "hachiwari version"
+        description: "Display the installed version of Hachiwari."
+      clear:
+        usage: "hachiwari clear"
+        description: "Remove any saved match results."
+      info:
+        usage: "hachiwari info [wins] [losses] [target] [language]"
+        description: "Deprecated. Please use `status --trial` instead."
+        details:
+          - "Running this command prints a warning and behaves like `status --trial`."
+      i:
+        usage: "hachiwari i   [wins] [losses] [target] [language]"
+        description: "Deprecated alias of info."
+      calculate:
+        usage: "hachiwari calculate [wins] [losses] --target=<value> --language=<ja|en|es|fr|de>"
+        description: "Deprecated. Please use `status --trial` instead."
+      help:
+        usage: "hachiwari help [command]"
+        description: "Show the list of commands or details for one command."
+  deprecations:
+    trial: "This command is deprecated. Use `hachiwari status --trial` instead."
+    alias: "This alias is deprecated. Use `hachiwari status --trial` instead."
+  thor:
+    status:
+      short: "Display current record and wins needed to reach the target"
+      long: "Displays winning percentage and number of wins to achieve the goal."
+      details:
+        - "You can omit 'status' and just pass the arguments."
+        - "Option: --trial / -t to simulate without saving."
+      option_trial: "Run in trial mode without saving results."
+    info:
+      short: "Deprecated. Behaves like status --trial"
+      long: "Deprecated command. Please use status --trial instead."
+      option_trial: "Use trial mode for the status command."
+    alias_i:
+      short: "Deprecated alias of info"
+      long: "Deprecated alias. Please use status --trial instead."
+    calculate:
+      short: "Deprecated. Behaves like status --trial"
+      long: "Deprecated command. Please use status --trial instead."
+      option_trial: "Use trial mode for the status command."
+      option_target: "Target percentage"
+      option_language: "Display language (ja, en, es, fr, de)"
+    version:
+      short: "Display the installed version of Hachiwari."
+    clear:
+      short: "Remove any saved match results."

@@ -16,4 +16,4 @@ require "hachiwari"
 # Minitest を読み込み、レポーターを利用してテスト結果を整形表示
 require "minitest/autorun"
 require "minitest/reporters"
-Minitest::Reporters.use!
+Minitest::Reporters.use! Minitest::Reporters::DefaultReporter.new(color: true)

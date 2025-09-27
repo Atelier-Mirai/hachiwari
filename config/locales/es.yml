@@ -1,0 +1,70 @@
+es:
+  status:
+    summary: "%<total>d partidas %<wins>d victorias %<losses>d derrotas porcentaje %<percentage>.4f %%"
+    needed: "Necesitas %<needed>d victorias más para alcanzar el %<target>d %%"
+    cushion: "Conceder %<losses_to_fall>d derrotas más bajará el porcentaje por debajo de %<target>d %%"
+  help:
+    general_intro: "Comandos disponibles:"
+    command_heading: "Comando: %<usage>s"
+    description_heading: "Descripción: %<description>s"
+    unknown_command: "El comando \"%<command>s\" no existe."
+    general_footer:
+      - "Usa `hachiwari <command> --help` para ver detalles de cada comando."
+    commands:
+      status:
+        usage: "hachiwari [status] [victorias] [derrotas] [objetivo] [idioma]"
+        description: "Muestra el porcentaje de victorias y las victorias necesarias para alcanzar la meta."
+        details:
+          - "Puedes omitir 'status' y pasar sólo los argumentos."
+          - "Opción: --trial / -t para simular sin guardar."
+      s:
+        usage: "hachiwari s   [victorias] [derrotas] [objetivo] [idioma]"
+        description: "Alias en desuso. Se procesará como 'status' tras mostrar una advertencia."
+      version:
+        usage: "hachiwari version"
+        description: "Muestra la versión instalada de Hachiwari."
+      clear:
+        usage: "hachiwari clear"
+        description: "Elimina los datos guardados del registro de partidas."
+      info:
+        usage: "hachiwari info [victorias] [derrotas] [objetivo] [idioma]"
+        description: "Comando obsoleto. Usa `status --trial`."
+        details:
+          - "Al ejecutarlo, muestra una advertencia y funciona igual que --trial."
+      i:
+        usage: "hachiwari i   [victorias] [derrotas] [objetivo] [idioma]"
+        description: "Alias obsoleto de info."
+      calculate:
+        usage: "hachiwari calculate [victorias] [derrotas] --target=<valor> --language=<ja|en>"
+        description: "Comando obsoleto. Usa `status --trial`."
+      help:
+        usage: "hachiwari help [comando]"
+        description: "Muestra la lista de comandos o los detalles de uno."
+  deprecations:
+    trial: "Este comando está obsoleto. Usa `hachiwari status --trial`."
+    alias: "Este alias está obsoleto. Usa `hachiwari status --trial`."
+  thor:
+    status:
+      short: "Muestra el resultado actual y las victorias necesarias"
+      long: "Muestra el porcentaje de victorias y cuántas victorias necesitas para alcanzar el objetivo."
+      details:
+        - "Puedes omitir 'status' y pasar sólo los argumentos."
+        - "Opción: --trial / -t para simular sin guardar."
+      option_trial: "Simula sin guardar el resultado."
+    info:
+      short: "Obsoleto. Se comporta como status --trial"
+      long: "Comando obsoleto. Usa status --trial."
+      option_trial: "Usa el modo de simulación de status."
+    alias_i:
+      short: "Alias obsoleto de info"
+      long: "Alias en desuso. Usa status --trial."
+    calculate:
+      short: "Obsoleto. Se comporta como status --trial"
+      long: "Comando obsoleto. Usa status --trial."
+      option_trial: "Usa el modo de simulación de status."
+      option_target: "Porcentaje objetivo"
+      option_language: "Idioma de salida (ja, en, es, fr, de)"
+    version:
+      short: "Muestra la versión instalada de Hachiwari."
+    clear:
+      short: "Elimina los resultados guardados."

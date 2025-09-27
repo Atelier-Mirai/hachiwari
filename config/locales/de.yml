@@ -1,0 +1,70 @@
+de:
+  status:
+    summary: "%<total>d Spiele %<wins>d Siege %<losses>d Niederlagen Siegquote %<percentage>.4f %%"
+    needed: "Noch %<needed>d Siege bis zum Ziel von %<target>d %%"
+    cushion: "Nach %<losses_to_fall>d weiteren Niederlagen fällt die Quote unter %<target>d %%"
+  help:
+    general_intro: "Verfügbare Befehle:"
+    command_heading: "Befehl: %<usage>s"
+    description_heading: "Beschreibung: %<description>s"
+    unknown_command: "Der Befehl \"%<command>s\" ist nicht vorhanden."
+    general_footer:
+      - "Mit `hachiwari <befehl> --help` erhältst du weitere Details."
+    commands:
+      status:
+        usage: "hachiwari [status] [siege] [niederlagen] [ziel] [sprache]"
+        description: "Zeigt die Siegquote und die benötigten Siege zum Erreichen des Ziels an."
+        details:
+          - "'status' kann weggelassen werden; übergib nur die Argumente."
+          - "Option: --trial / -t für eine Simulation ohne zu speichern."
+      s:
+        usage: "hachiwari s   [siege] [niederlagen] [ziel] [sprache]"
+        description: "Veralteter Alias. Wird nach einer Warnung wie 'status' behandelt."
+      version:
+        usage: "hachiwari version"
+        description: "Zeigt die installierte Version von Hachiwari an."
+      clear:
+        usage: "hachiwari clear"
+        description: "Entfernt die gespeicherten Matchdaten."
+      info:
+        usage: "hachiwari info [siege] [niederlagen] [ziel] [sprache]"
+        description: "Veralteter Befehl. Bitte `status --trial` verwenden."
+        details:
+          - "Zeigt eine Warnung und verhält sich wie --trial."
+      i:
+        usage: "hachiwari i   [siege] [niederlagen] [ziel] [sprache]"
+        description: "Veralteter Alias von info."
+      calculate:
+        usage: "hachiwari calculate [siege] [niederlagen] --target=<wert> --language=<ja|en|es|fr|de>"
+        description: "Veralteter Befehl. Bitte `status --trial` verwenden."
+      help:
+        usage: "hachiwari help [befehl]"
+        description: "Zeigt die Liste der Befehle oder Details zu einem Befehl."
+  deprecations:
+    trial: "Dieser Befehl ist veraltet. Verwende `hachiwari status --trial`."
+    alias: "Dieser Alias ist veraltet. Verwende `hachiwari status --trial`."
+  thor:
+    status:
+      short: "Zeigt den aktuellen Stand und benötigte Siege"
+      long: "Zeigt die Siegquote und die Anzahl benötigter Siege, um das Ziel zu erreichen."
+      details:
+        - "'status' kann weggelassen werden; übergib nur die Argumente."
+        - "Option: --trial / -t für eine Simulation ohne Speicherung."
+      option_trial: "Simulation ohne Speicherung der Ergebnisse."
+    info:
+      short: "Veraltet. Verhält sich wie status --trial"
+      long: "Veralteter Befehl. Bitte status --trial verwenden."
+      option_trial: "Verwendet den Simulationsmodus von status."
+    alias_i:
+      short: "Veralteter Alias von info"
+      long: "Veralteter Alias. Bitte status --trial verwenden."
+    calculate:
+      short: "Veraltet. Verhält sich wie status --trial"
+      long: "Veralteter Befehl. Bitte status --trial verwenden."
+      option_trial: "Verwendet den Simulationsmodus von status."
+      option_target: "Ziel-Prozentsatz"
+      option_language: "Ausgabe-Sprache (ja, en, es, fr, de)"
+    version:
+      short: "Zeigt die installierte Version von Hachiwari an."
+    clear:
+      short: "Löscht die gespeicherten Ergebnisse."

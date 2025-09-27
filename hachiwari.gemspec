@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Atelier-Mirai"]
   spec.email         = ["contact@atelier-mirai.net"]
 
-  spec.summary       = "Winning rate 80%"
-  spec.description   = "Calculate the number of wins needed to achieve an 80% win rate."
+  spec.summary       = "Track progress toward your target win rate"
+  spec.description   = "Enter your current record and instantly see how many more wins you need to hit 80% or a custom goal."
   spec.homepage      = "https://github.com/Atelier-Mirai/hachiwari"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 3.3.0"

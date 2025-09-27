@@ -11,11 +11,46 @@ module Hachiwari
       (results.wins / games.to_f * 100).round(4)
     end
 
-    # 目標勝率を達成するために必要な勝ち数を算出
+    # 目標勝率を満たすまでに必要な追加勝利数を算出
+    # 既に目標を上回っている、もしくは目標が無効な場合は 0 を返す
     def required_wins(results)
-      target_ratio = results.target / 100.0
-      needed_wins = (target_ratio / (1 - target_ratio) * results.losses) - results.wins
-      needed_wins.round(6).ceil
+      target = results.target.to_i
+      return 0 if target <= 0
+
+      wins = results.wins.to_i
+      losses = results.losses.to_i
+      total = wins + losses
+
+      return 0 if total.positive? && wins * 100 >= target * total
+
+      denominator = 100 - target
+      return 0 if denominator <= 0
+
+      numerator = (target * total) - (wins * 100)
+      return 0 if numerator <= 0
+
+      (numerator + denominator - 1) / denominator
+    end
+
+    # 勝率が目標を上回っている場合に、目標を下回るまでに許容される敗北数を算出
+    # それ以外の状況では 0 を返す
+    def losses_until_below_target(results)
+      target = results.target.to_i
+      return 0 if target <= 0
+
+      wins = results.wins.to_i
+      losses = results.losses.to_i
+      total = wins + losses
+      return 0 if total.zero?
+
+      numerator = (wins * 100) - (target * total)
+      return 0 if numerator < 0
+
+      return 0 if numerator.zero? && target >= 100 && losses.positive?
+
+      return 1 if numerator.zero? && target >= 100
+
+      (numerator / target) + 1
     end
 
     # 総対局数（勝ち数 + 負け数）を返却

@@ -1,12 +1,12 @@
 # Hachiwari
 
-Hachiwari is derived from the word "80%". It is a Ruby gem that shows you the number of wins you need to achieve your target win rate (the default target is 80%).
+Hachiwari originates from the phrase "80 percent" (hachiwari). It is a Ruby gem that tells you how many additional wins you need to hit your target win rate (80 percent by default).
 
-For the Japanese documentation, refer to [README.md](README.md).
+For other languages, see [README.md](README.md) (Japanese) / [README.es.md](README.es.md) (Spanish) / [README.fr.md](README.fr.md) (French) / [README.de.md](README.de.md) (German).
 
 ## Installation
 
-Install it yourself as:
+Install it with:
 
 ```
 % gem install hachiwari
@@ -14,28 +14,29 @@ Install it yourself as:
 
 ## Usage
 
-### Display the number of wins needed to achieve the target win rate (with automatic saving)
+### Display the number of wins required to reach the target win rate (with automatic saving)
 
 ```
-% hachiwari status [wins] [losses] [target] [language]
+% hachiwari [status] [wins] [losses] [target] [language]
 ```
 
-- The `s` command can also be used as an alias for `status`.
-- There are four arguments: number of wins, number of losses, target win rate, and display language. All arguments are optional.
-- When no arguments are provided, the current match record is displayed based on default values or previously saved data. Defaults are wins: 0, losses: 0, win rate: 80%, language: Japanese (`ja`).
-- If the number of wins is provided as the first argument, the required number of additional wins based on it will be displayed. The remaining arguments fall back to defaults or saved values.
-- The provided number of wins is automatically saved to `~/.hachiwari`.
-- To update the number of losses, supply it as the second argument.
-- To change the target win rate, provide it as the third argument (e.g., `90` for a 90% target).
-- To change the display language, use the fourth argument. Specify `en` for English; the default is Japanese `ja`.
+- You can omit `status` and pass only the arguments.
+- The legacy alias `s` is deprecated; it prints a warning and internally invokes `status`.
+- There are four arguments: number of wins, number of losses, target win rate, and display language. All of them are optional.
+- With no arguments, the current record is shown based on defaults or previously saved data. Defaults are wins: 0, losses: 0, target: 80 percent, language: Japanese (`ja`).
+- If you pass wins as the first argument, Hachiwari tells you how many more wins are required from that value. Remaining arguments fall back to defaults or saved data.
+- The number of wins you provide is automatically saved to `~/.hachiwari`.
+- To update losses, pass them as the second argument.
+- To change the target win rate, use the third argument (for example, `90` for 90 percent).
+- To change the language, use the fourth argument. Supported values are `ja` (Japanese, default), `en` (English), `es` (Spanish), `fr` (French), and `de` (German).
 
-### Display the number of wins needed to achieve the target win rate (information only)
-
-Usage is the same as the `status / s` command, but this command does not save the provided arguments. It is handy when you only want to simulate different scenarios.
+To preview the result without saving it, append the `--trial` (or `-t`) option:
 
 ```
-% hachiwari info [wins] [losses] [target] [language]
+% hachiwari [status] --trial [wins] [losses] [target] [language]
 ```
+
+Arguments behave exactly as in the regular `status` command, but no state is persisted. The legacy `info`, `i`, and `calculate` commands are deprecated; they print a warning and behave like `status --trial`.
 
 ### Display the version of Hachiwari
 
@@ -43,22 +44,60 @@ Usage is the same as the `status / s` command, but this command does not save th
 % hachiwari version
 ```
 
-Displays the currently installed version of Hachiwari.
+Shows the installed version of Hachiwari.
+
+### Delete saved match data
+
+```
+% hachiwari clear
+```
+
+Removes the stored `.hachiwari` file. If no data exists, a warning is shown instead.
+
+### Show command lists or detailed help
+
+```
+% hachiwari --help
+% hachiwari status --help
+```
+
+`hachiwari --help` prints available commands, and `hachiwari <command> --help` prints detailed help for each command.
+
+### Deprecated commands
+
+The following commands/aliases are deprecated. When executed, they print a warning and fall back to compatible behavior:
+
+- **s**: Former alias of `status`. A warning is printed and `status` runs.
+- **info / i**: Formerly provided trial output without saving. They now warn and behave like `status --trial`.
+- **calculate**: Former option-driven calculator command. It now warns and behaves like `status --trial` (the `--target` / `--language` options remain available).
 
 ## Development
 
-After checking out the repository, run `bin/setup` to install dependencies. Then run `rake test` to execute the test suite. You can also run `bin/console` for an interactive prompt that lets you experiment.
+Clone the repository and set up the development environment with:
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```
+bundle install
+bundle exec rake test
+```
+
+- **Install dependencies**: `bundle install`
+- **Run tests**: `bundle exec rake test`
+- **Check the CLI manually**: `bundle exec ruby -Ilib bin/hachiwari --help`
+
+To install the gem locally, run `bundle exec rake install`.
+
+### Releasing a new version
+
+1. Update `VERSION` in `lib/hachiwari/version.rb`.
+2. Commit and push your changes.
+3. Run `bundle exec rake release`.
+
+The release task creates a git tag, pushes commits and the tag, and publishes the gem to [rubygems.org](https://rubygems.org) (you need MFA enabled on RubyGems).
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/Atelier-Mirai/hachiwari. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/Atelier-Mirai/hachiwari/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on [GitHub](https://github.com/Atelier-Mirai/hachiwari).
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
-## Code of Conduct
-
-Everyone interacting in the Hachiwari project's codebases, issue trackers, chat rooms, and mailing lists is expected to follow the [code of conduct](https://github.com/Atelier-Mirai/hachiwari/blob/master/CODE_OF_CONDUCT.md).
+This gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT). See [LICENSE](./LICENSE) for details.

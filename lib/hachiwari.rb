@@ -8,6 +8,7 @@ require_relative "hachiwari/status_calculator"
 require_relative "hachiwari/status_presenter"
 require_relative "hachiwari/status_runner"
 require_relative "hachiwari/cli"
+require_relative "hachiwari/locales"
 
 module Hachiwari
   # gem 全体で共通的に利用できる基底エラークラス

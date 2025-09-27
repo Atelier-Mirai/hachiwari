@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require "yaml/store"
+require "fileutils"
 require_relative "results"
 
 module Hachiwari
   # `YAML::Store` を使った永続化層。勝率データの読み書きを担う
   class Storage
     DEFAULT_PATH = ENV.fetch("HACHIWARI_STORE_PATH", File.join(Dir.home, ".hachiwari"))
+    PERMITTED_SYMBOLS = %i[wins losses target language results ja en].freeze
 
     # パスを差し替え可能にしてテストしやすくする
     def initialize(path = DEFAULT_PATH)
@@ -15,12 +17,24 @@ module Hachiwari
 
     # 保存された結果を `Results` に変換して返却
     def load
-      coerce(load_raw)
+      migrate_legacy_if_needed
+      data = load_raw
+      data ||= load_legacy
+      coerce(data)
     end
 
     # 与えられた結果を YAML に書き出す
     def save(results)
+      migrate_legacy_if_needed
       store.transaction { store[:results] = results.to_h }
+    end
+
+    # 保存済みデータを削除
+    def clear
+      existed = File.exist?(path)
+      FileUtils.rm_f(path)
+      @store = nil
+      existed
     end
 
     private
@@ -41,15 +55,18 @@ module Hachiwari
       nil
     end
 
-    # 古い YAML 形式から安全にデータを復元
     def load_legacy
       return unless File.exist?(path)
 
+      content = File.read(path)
+      sanitized = sanitize_legacy_yaml(content)
+
       data = Psych.safe_load(
-        File.read(path),
-        permitted_classes: [Hachiwari::Results],
-        permitted_symbols: %i[wins losses target language results],
-        aliases: true
+        sanitized,
+        permitted_classes: [Hachiwari::Results, Symbol],
+        permitted_symbols: PERMITTED_SYMBOLS,
+        aliases: true,
+        symbolize_names: true
       )
       extract_results_data(data)
     rescue Psych::Exception, Errno::ENOENT
@@ -60,7 +77,13 @@ module Hachiwari
     def extract_results_data(data)
       return unless data
 
-      data[:results] || data["results"] || data
+      object = data[:results] || data["results"] || data
+      case object
+      when Hash, Hachiwari::Results
+        object
+      else
+        legacy_struct_to_hash(object)
+      end
     end
 
     # 各種形式を `Results` に変換
@@ -98,6 +121,76 @@ module Hachiwari
     end
 
     # デフォルト値を表す結果
+    def legacy_struct_to_hash(object)
+      return object.to_h if object.respond_to?(:to_h)
+
+      if object.respond_to?(:members) && object.respond_to?(:[]) # Struct 互換
+        object.members.each_with_object({}) do |member, hash|
+          hash[member.to_sym] = object[member]
+        end
+      else
+        nil
+      end
+    end
+
+    def normalize_results_hash(data)
+      case data
+      when Hachiwari::Results
+        data.to_h
+      when Hash
+        data.transform_keys { |key| key.to_sym rescue key }
+      else
+        legacy_struct_to_hash(data) || {}
+      end
+    end
+
+    def sanitize_legacy_yaml(content)
+      return content unless content
+
+      patterns = [
+        %r{!ruby/struct:Hachiwari::CLI::Results},
+        %r{!ruby/object:Hachiwari::CLI::Results},
+        %r{!ruby/struct:Hachiwari::Results},
+        %r{!ruby/object:Hachiwari::Results}
+      ]
+
+      patterns.reduce(content) { |text, pattern| text.gsub(pattern, "") }
+    end
+
+    def migrate_legacy_if_needed
+      return unless File.exist?(path)
+
+      content = File.read(path)
+      return unless legacy_yaml?(content)
+
+      sanitized = sanitize_legacy_yaml(content)
+      data = Psych.safe_load(
+        sanitized,
+        permitted_classes: [Hachiwari::Results, Symbol],
+        permitted_symbols: PERMITTED_SYMBOLS,
+        aliases: true,
+        symbolize_names: true
+      )
+
+      results_hash = extract_results_data(data)
+      return unless results_hash && !results_hash.empty?
+
+      normalized = normalize_results_hash(results_hash)
+      FileUtils.rm_f(path)
+      yaml_store = YAML::Store.new(path)
+      yaml_store.transaction { yaml_store[:results] = normalized }
+      @store = nil
+    rescue Psych::Exception
+      # 破損データは削除してデフォルトに戻す
+      clear
+    end
+
+    def legacy_yaml?(content)
+      return false unless content
+
+      content.include?("Hachiwari::CLI::Results") || content.include?("Hachiwari::Results")
+    end
+
     def default_results
       Hachiwari::Results.new(0, 0, 80, :ja)
     end

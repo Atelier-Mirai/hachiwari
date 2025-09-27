@@ -1,0 +1,70 @@
+ja:
+  status:
+    summary: "%<total>d 戦 %<wins>d 勝 %<losses>d 敗 勝率 %<percentage>.4f %% です"
+    needed: "あと %<needed>d 勝で 勝率 %<target>d %% です"
+    cushion: "あと %<losses_to_fall>d 敗すると 勝率 %<target>d %% を下回ります"
+  help:
+    general_intro: "利用可能なコマンド:"
+    command_heading: "コマンド: %<usage>s"
+    description_heading: "説明: %<description>s"
+    unknown_command: "コマンド \"%<command>s\" は存在しません。"
+    general_footer:
+      - "各コマンドの詳細は `hachiwari <command> --help` で確認できます。"
+    commands:
+      status:
+        usage: "hachiwari [status] [wins] [losses] [target] [language]"
+        description: "保存済みまたは指定した勝敗から、勝率と必要勝ち数を表示します。"
+        details:
+          - "status は省略可能です。引数のみでも実行できます。"
+          - "オプション: --trial / -t で保存せず試算します。"
+      s:
+        usage: "hachiwari s   [wins] [losses] [target] [language]"
+        description: "廃止予定のエイリアスです。status を省略して引数のみでも実行できます。"
+      version:
+        usage: "hachiwari version"
+        description: "Hachiwari のバージョン番号を表示します。"
+      clear:
+        usage: "hachiwari clear"
+        description: "保存されている対局成績データを削除します。"
+      info:
+        usage: "hachiwari info [wins] [losses] [target] [language]"
+        description: "廃止予定のコマンドです。status --trial を使用してください。"
+        details:
+          - "実行すると警告を表示し、--trial 相当の結果を出力します。"
+      i:
+        usage: "hachiwari i   [wins] [losses] [target] [language]"
+        description: "info コマンドの非推奨エイリアスです。"
+      calculate:
+        usage: "hachiwari calculate [wins] [losses] --target=<value> --language=<ja|en|es|fr|de>"
+        description: "廃止予定のコマンドです。status --trial を使用してください。"
+      help:
+        usage: "hachiwari help [command]"
+        description: "コマンド一覧や詳細を表示します。"
+  deprecations:
+    trial: "このコマンドは廃止されました。代わりに `hachiwari status --trial` を利用してください。"
+    alias: "このエイリアスは廃止予定です。`hachiwari status --trial` を利用してください。"
+  thor:
+    status:
+      short: "対局成績を表示し、必要勝ち数を計算します"
+      long: "保存済みまたは指定した勝敗から、勝率と必要勝ち数を表示します。"
+      details:
+        - "status は省略可能です。引数のみでも実行できます。"
+        - "オプション: --trial / -t で保存せず試算します。"
+      option_trial: "試算モードで保存せずに結果を表示します。"
+    info:
+      short: "廃止予定。status --trial と同等に動作します"
+      long: "廃止予定のコマンドです。status --trial を使用してください。"
+      option_trial: "status の試算モードを利用します。"
+    alias_i:
+      short: "info の非推奨エイリアスです"
+      long: "廃止予定のエイリアスです。status --trial を使用してください。"
+    calculate:
+      short: "廃止予定。status --trial と同等に動作します"
+      long: "廃止予定のコマンドです。status --trial を使用してください。"
+      option_trial: "status の試算モードを利用します。"
+      option_target: "目標勝率"
+      option_language: "表示言語 (ja, en, es, fr, de)"
+    version:
+      short: "Hachiwari のバージョン番号を表示します。"
+    clear:
+      short: "保存されている対局成績データを削除します。"

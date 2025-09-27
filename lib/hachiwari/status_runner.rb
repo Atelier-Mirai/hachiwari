@@ -17,6 +17,8 @@ module Hachiwari
 
     # 引数から `Results` を生成し、保存フラグに応じて永続化と表示を行う
     def call(input, save:)
+      # レガシーデータが残っている環境でも、試算モード含め常に最新形式へ移行
+      storage.send(:migrate_legacy_if_needed) if storage.respond_to?(:send)
       data = normalize_input(input)
       base = storage.load
       results = merge_results(base, data)
@@ -72,6 +74,7 @@ module Hachiwari
         losses: results.losses,
         percentage: calculator.winning_percentage(results),
         needed: calculator.required_wins(results),
+        losses_to_fall: calculator.losses_until_below_target(results),
         target: results.target.to_i
       }
     end
