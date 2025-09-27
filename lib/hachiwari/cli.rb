@@ -12,88 +12,91 @@ module Hachiwari
 
     class << self
       # CLI 起動時に旧フォーマットの保存データをマイグレートし、ヘルプやバージョン表示を先に処理する
-      def start(given_args = ARGV, config = {}, &block)
+      def start(given_args = ARGV, config = {}, &)
         migrate_legacy_store
 
         args = Array(given_args).dup
+        return display_help(nil) if args.empty?
+        return if handle_direct_option?(args)
 
-        if args.empty?
-          display_help(nil)
-          return
-        end
-
-        case args.first
-        when "--version", "-v"
-          puts Hachiwari::VERSION
-          return
-        when "--help", "-h"
-          display_help(args[1])
-          return
-        when "help"
-          display_help(args[1])
-          return
-        end
-
-        help_index = args.index("--help") || args.index("-h")
-        if help_index
-          display_help(extract_command_for_help(args, help_index))
-          return
-        end
-
-        if default_to_status?(args)
-          super(["status", *args], config, &block)
-          return
-        end
-
-        super(args, config, &block)
+        args = ["status", *args] if default_to_status?(args)
+        super(args, config, &)
       end
 
+      # ヘルプ用の文字列をユーザー設定ロケール優先で取得する
       def thor_string(command, key)
         fetch_locale_value(help_language, command, key) || fetch_locale_value(DEFAULT_THOR_LOCALE, command, key) || ""
       end
 
+      # ヘルプ詳細文をロケール順に取得して配列化する
       def thor_details(command)
         value = fetch_locale_value(help_language, command, :details)
         value = fetch_locale_value(DEFAULT_THOR_LOCALE, command, :details) if value.nil?
         array_wrap(value)
       end
 
+      # 長文説明をメイン文と詳細の組み合わせで構築する
       def thor_long_description(command)
         build_long_description(thor_string(command, :long), thor_details(command))
       end
 
+      # デフォルトロケールから短い説明を取得する
       def default_thor_string(command, key)
         fetch_locale_value(DEFAULT_THOR_LOCALE, command, key) || ""
       end
 
+      # デフォルトロケールの詳細情報を配列で取得する
       def default_thor_details(command)
         array_wrap(fetch_locale_value(DEFAULT_THOR_LOCALE, command, :details))
       end
 
+      # デフォルトロケールで長文説明を生成する
       def default_thor_long_description(command)
         build_long_description(default_thor_string(command, :long), default_thor_details(command))
       end
 
       private
 
+      # 引数に含まれるバージョン/ヘルプ系の即時オプションを処理する
+      def handle_direct_option?(args)
+        case args.first
+        when "--version", "-v"
+          puts Hachiwari::VERSION
+          return true
+        when "--help", "-h", "help"
+          display_help(args[1])
+          return true
+        end
+
+        help_index = args.index("--help") || args.index("-h")
+        return false unless help_index
+
+        display_help(extract_command_for_help(args, help_index))
+        true
+      end
+
+      # 旧ストレージ形式が存在する場合にマイグレーションを実行する
       def migrate_legacy_store
         Storage.new.send(:migrate_legacy_if_needed)
       rescue StandardError
         # 続行
       end
 
+      # ヘルプ引数の位置からコマンド名候補を取得する
       def extract_command_for_help(args, help_index)
         before = help_index.positive? ? args[help_index - 1] : nil
         after = args[help_index + 1]
         [before, after].compact.find { |candidate| candidate && !candidate.start_with?("-") }
       end
 
+      # 指定されたコマンドのヘルプを出力する
       def display_help(command)
         command = command&.to_s&.strip
         command = nil if command.nil? || command.empty?
         command ? print_command_help(command) : print_general_help
       end
 
+      # 全体ヘルプの各コマンド情報を出力する
       def print_general_help
         data = help_content
         puts data[:general_intro]
@@ -107,6 +110,7 @@ module Hachiwari
         Array(data[:general_footer]).each { |line| puts line }
       end
 
+      # 個別コマンドの詳細ヘルプを出力する
       def print_command_help(command)
         data = help_content
         info = data[:commands][command.to_sym] || data[:commands][command.to_s]
@@ -123,12 +127,14 @@ module Hachiwari
         Array(info[:details]).each { |detail| puts "  #{detail}" }
       end
 
+      # ロケールごとのヘルプデータを取得する
       def help_content
         Hachiwari::Locales.t(help_language, :help)
       rescue KeyError
         Hachiwari::Locales.t(:ja, :help)
       end
 
+      # 保存ロケールが利用可能か確認し、ヘルプ用ロケールを返す
       def help_language
         locale = Storage.new.load.language
         available = Hachiwari::Locales.available_locales
@@ -137,6 +143,7 @@ module Hachiwari
         :ja
       end
 
+      # 指定コマンドが登録済みか判定し、未登録なら status へフォールバックする
       def default_to_status?(args)
         return false if args.empty?
 
@@ -146,12 +153,14 @@ module Hachiwari
         !all_commands.key?(first)
       end
 
+      # ロケール付きの Thor 文言を取得する
       def fetch_locale_value(locale, command, key)
         Hachiwari::Locales.t(locale, :thor, command, key)
       rescue KeyError
         nil
       end
 
+      # メイン文と詳細配列から長文を組み立てる
       def build_long_description(primary, extra_lines)
         lines = []
         lines << primary if primary && !primary.empty?
@@ -159,6 +168,7 @@ module Hachiwari
         lines.compact.join("\n")
       end
 
+      # 値を配列にラップして扱いやすくする
       def array_wrap(value)
         case value
         when nil
@@ -173,6 +183,7 @@ module Hachiwari
 
     attr_reader :runner, :storage
 
+    # コマンド実行時に利用するストレージとランナーを初期化する
     def initialize(*args, **kwargs)
       super
       @storage = Storage.new
@@ -196,17 +207,20 @@ module Hachiwari
     end
 
     desc "i   [wins] [losses] [target] [language]", CLI.default_thor_long_description(:alias_i)
+    # `info` と同等の動作を行う短縮エイリアス
     def i(*args)
       warn_deprecation("i", locale_key: :alias)
       run_status_with_trial_flag(trial: true, **parse_status_arguments(args))
     end
 
     desc "version", CLI.default_thor_string(:version, :short)
+    # CLI のバージョン情報を表示する
     def version
       puts Hachiwari::VERSION
     end
 
     desc "clear", CLI.default_thor_string(:clear, :short)
+    # 保存済みの状態データを削除する
     def clear
       if storage.clear
         say("Saved status data has been cleared.", :green)
@@ -223,7 +237,7 @@ module Hachiwari
       warn_deprecation("calculate")
       run_status_with_trial_flag(
         trial: true,
-        **{ wins: wins, losses: losses, target: options[:target], language: options[:language] }
+        wins: wins, losses: losses, target: options[:target], language: options[:language]
       )
     end
 

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    hachiwari (0.4.0)
+    hachiwari (1.0.0)
       pstore
       thor
 

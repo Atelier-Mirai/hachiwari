@@ -97,7 +97,7 @@ bundle exec rake test
 2. 変更をコミットしてリモートへプッシュする
 3. `bundle exec rake release` を実行する
 
-`rake release` は、更新したバージョンで git タグを作成し、コミットとタグを push し、生成された `.gem` を [rubygems.org](https://rubygems.org) に公開します（RubyGems への公開には MFA 設定が必要です）。
+`rake release` は、更新したバージョンで git タグを作成し、コミットとタグを push し、生成された `.gem` を [rubygems.org](https://rubygems.org) に公開します。
 
 ## 貢献
 

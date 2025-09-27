@@ -92,7 +92,7 @@ Zum lokalen Installieren der Gem: `bundle exec rake install`.
 2. Änderungen committen und pushen.
 3. `bundle exec rake release` ausführen.
 
-Damit werden Tag und Commits erstellt und gepusht, und die Gem wird auf [rubygems.org](https://rubygems.org) veröffentlicht (MFA bei RubyGems erforderlich).
+Damit werden Tag und Commits erstellt und gepusht, und die Gem wird auf [rubygems.org](https://rubygems.org) veröffentlicht.
 
 ## Mitwirken
 

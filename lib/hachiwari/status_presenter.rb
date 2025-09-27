@@ -17,6 +17,7 @@ module Hachiwari
 
     private
 
+    # 指定ロケールのテンプレートを取得し、失敗時は日本語へフォールバック
     def status_template(locale)
       Hachiwari::Locales.t(locale, :status)
     rescue KeyError

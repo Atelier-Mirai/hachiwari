@@ -92,7 +92,7 @@ Para instalar la gema localmente, ejecuta `bundle exec rake install`.
 2. Haz commit y push de los cambios.
 3. Ejecuta `bundle exec rake release`.
 
-Este comando creará la etiqueta git, la publicará y subirá la gema a [rubygems.org](https://rubygems.org) (necesitas MFA en RubyGems).
+Este comando creará la etiqueta git, la publicará y subirá la gema a [rubygems.org](https://rubygems.org).
 
 ## Contribuir
 

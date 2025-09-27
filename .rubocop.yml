@@ -24,3 +24,25 @@ Layout/LineLength:
 # ドキュメントコメントを必須にしない
 Style/Documentation:
   Enabled: false
+
+# CLI やストレージ周りの複雑さ、およびテストコードの冗長さを許容
+Metrics/ClassLength:
+  Max: 220
+
+# CLI やストレージなどで必要な手続き型処理を許容するため閾値を緩和
+Metrics/MethodLength:
+  Max: 20
+  Exclude:
+    - "test/**/*"
+
+# バリデーションやフォーマット処理の複雑さを吸収
+Metrics/AbcSize:
+  Max: 25
+
+# CLI 分岐やレガシー移行ロジック向けに複雑度の上限を調整
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+# 全体的な認知的複雑度もやや緩和
+Metrics/PerceivedComplexity:
+  Max: 10

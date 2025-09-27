@@ -92,7 +92,7 @@ To install the gem locally, run `bundle exec rake install`.
 2. Commit and push your changes.
 3. Run `bundle exec rake release`.
 
-The release task creates a git tag, pushes commits and the tag, and publishes the gem to [rubygems.org](https://rubygems.org) (you need MFA enabled on RubyGems).
+The release task creates a git tag, pushes commits and the tag, and publishes the gem to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 

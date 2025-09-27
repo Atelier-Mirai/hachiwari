@@ -44,7 +44,7 @@ module Hachiwari
       return 0 if total.zero?
 
       numerator = (wins * 100) - (target * total)
-      return 0 if numerator < 0
+      return 0 if numerator.negative?
 
       return 0 if numerator.zero? && target >= 100 && losses.positive?
 
