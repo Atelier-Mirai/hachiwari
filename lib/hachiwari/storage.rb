@@ -55,6 +55,7 @@ module Hachiwari
       nil
     end
 
+    # レガシー YAML 保存データを安全な形式へ読み込み直す
     def load_legacy
       return unless File.exist?(path)
 
@@ -123,27 +124,30 @@ module Hachiwari
     # デフォルト値を表す結果
     def legacy_struct_to_hash(object)
       return object.to_h if object.respond_to?(:to_h)
+      return unless object.respond_to?(:members) && object.respond_to?(:[]) # Struct 互換
 
-      if object.respond_to?(:members) && object.respond_to?(:[]) # Struct 互換
-        object.members.each_with_object({}) do |member, hash|
-          hash[member.to_sym] = object[member]
-        end
-      else
-        nil
+      object.members.each_with_object({}) do |member, hash|
+        hash[member.to_sym] = object[member]
       end
     end
 
+    # 多様な結果データを Hash 形式へ正規化する
     def normalize_results_hash(data)
       case data
       when Hachiwari::Results
         data.to_h
       when Hash
-        data.transform_keys { |key| key.to_sym rescue key }
+        data.transform_keys do |key|
+          key.to_sym
+        rescue StandardError
+          key
+        end
       else
         legacy_struct_to_hash(data) || {}
       end
     end
 
+    # レガシー YAML タグを除去して安全にデシリアライズできるよう整形する
     def sanitize_legacy_yaml(content)
       return content unless content
 
@@ -157,6 +161,7 @@ module Hachiwari
       patterns.reduce(content) { |text, pattern| text.gsub(pattern, "") }
     end
 
+    # レガシーファイルが存在すれば最新形式へ移行する
     def migrate_legacy_if_needed
       return unless File.exist?(path)
 
@@ -185,12 +190,14 @@ module Hachiwari
       clear
     end
 
+    # YAML 内に旧形式のマーカーが含まれるかを判定する
     def legacy_yaml?(content)
       return false unless content
 
       content.include?("Hachiwari::CLI::Results") || content.include?("Hachiwari::Results")
     end
 
+    # 保存データがない場合に利用する初期値を生成する
     def default_results
       Hachiwari::Results.new(0, 0, 80, :ja)
     end

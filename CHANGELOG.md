@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+_No changes yet._
+
+## [1.0.0] - 2025-09-27
+
 ### Added
 - `hachiwari clear` コマンドを追加し、保存済みの対局成績を削除できるようにしました。
 - `hachiwari status --trial` オプションを追加し、保存せずに試算できるようにしました。

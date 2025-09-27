@@ -4,24 +4,24 @@ require "test_helper"
 
 # `Hachiwari::CLI` の振る舞いを確認するためのテストクラス
 class HachiwariTest < Minitest::Test
+  # 計算ロジックと結果データの初期化
   def setup
-    # 計算ロジックと結果データの初期化
     @calculator = Hachiwari::StatusCalculator.new
     @base_results = Hachiwari::Results.new(79, 20, 80, :ja)
   end
 
+  # バージョン番号が定義されていることを確認
   def test_that_it_has_a_version_number
-    # バージョン番号が定義されていることを確認
     refute_nil ::Hachiwari::VERSION
   end
 
+  # ひとまず雛形として true を返す簡易テスト
   def test_it_does_something_useful
-    # ひとまず雛形として true を返す簡易テスト
     assert true
   end
 
+  # 勝率計算の結果が期待通りであることを確認
   def test_winning_percentage
-    # 勝率計算の結果が期待通りであることを確認
     results = Hachiwari::Results.new(40, 10, 80, :ja)
     assert_in_delta 80.0000, @calculator.winning_percentage(results), 0.0001
 
@@ -35,8 +35,8 @@ class HachiwariTest < Minitest::Test
     assert_in_delta 79.2079, @calculator.winning_percentage(results), 0.0001
   end
 
+  # 目標勝率を達成するために必要な勝ち数を検証
   def test_required_wins
-    # 目標勝率を達成するために必要な勝ち数を検証
     assert_equal 1, @calculator.required_wins(@base_results)
 
     results = Hachiwari::Results.new(7162, 1823, 80, :ja)
@@ -50,8 +50,8 @@ class HachiwariTest < Minitest::Test
     assert_equal 7, @calculator.losses_until_below_target(results)
   end
 
+  # save: true の場合にストレージへ保存されることを確認
   def test_status_runner_updates_storage_when_save_true
-    # save: true の場合にストレージへ保存されることを確認
     temp_store = File.expand_path("../tmp/runner-store.yml", __dir__)
     storage = Hachiwari::Storage.new(temp_store)
     runner = Hachiwari::StatusRunner.new(storage: storage)
@@ -65,8 +65,8 @@ class HachiwariTest < Minitest::Test
     FileUtils.rm_f(temp_store)
   end
 
+  # save: false の場合にストレージが変更されないことを確認
   def test_status_runner_does_not_persist_when_save_false
-    # save: false の場合にストレージが変更されないことを確認
     temp_store = File.expand_path("../tmp/runner-store.yml", __dir__)
     storage = Hachiwari::Storage.new(temp_store)
     runner = Hachiwari::StatusRunner.new(storage: storage)
@@ -80,8 +80,8 @@ class HachiwariTest < Minitest::Test
     FileUtils.rm_f(temp_store)
   end
 
+  # CLI から clear を呼び出すと保存ファイルが削除されることを検証
   def test_cli_clear_removes_saved_data
-    # CLI から clear を呼び出すと保存ファイルが削除されることを検証
     path = ENV.fetch("HACHIWARI_STORE_PATH")
     storage = Hachiwari::Storage.new(path)
     storage.save(Hachiwari::Results.new(5, 3, 80, :ja))
@@ -92,8 +92,8 @@ class HachiwariTest < Minitest::Test
     refute File.exist?(path), "Expected store file to be removed by clear command"
   end
 
+  # アンインストールフックが呼ばれると自動的に保存ファイルが削除されることを検証
   def test_post_uninstall_hook_clears_storage
-    # アンインストールフックが呼ばれると自動的に保存ファイルが削除されることを検証
     path = ENV.fetch("HACHIWARI_STORE_PATH")
     storage = Hachiwari::Storage.new(path)
     storage.save(Hachiwari::Results.new(12, 8, 80, :ja))
@@ -179,7 +179,7 @@ class HachiwariTest < Minitest::Test
     storage.clear
     storage.save(Hachiwari::Results.new(4, 6, 75, :ja))
 
-    out, err = capture_io { Hachiwari::CLI.start(["info", "10", "5"]) }
+    out, err = capture_io { Hachiwari::CLI.start(%w[info 10 5]) }
 
     assert_includes out, "status --trial"
     persisted = storage.load
@@ -212,7 +212,7 @@ class HachiwariTest < Minitest::Test
     storage = Hachiwari::Storage.new(ENV.fetch("HACHIWARI_STORE_PATH"))
     storage.clear
 
-    capture_io { Hachiwari::CLI.start(["10", "2", "85", "en"]) }
+    capture_io { Hachiwari::CLI.start(%w[10 2 85 en]) }
 
     persisted = storage.load
     assert_equal 10, persisted.wins
